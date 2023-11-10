@@ -129,6 +129,8 @@
     <version.java-jwt>4.4.0</version.java-jwt>
     <version.reactive-streams>1.0.4</version.reactive-streams>
     <version.postgresql>42.6.0</version.postgresql>
+    <version.tc-keycloak>3.1.0</version.tc-keycloak>
+    <version.jakarta-activation>2.1.0</version.jakarta-activation>
 
     <!-- maven plugins -->
     <plugin.version.antrun>3.1.0</plugin.version.antrun>
@@ -873,6 +875,18 @@
       </dependency>
 
       <dependency>
+        <groupId>com.github.dasniko</groupId>
+        <artifactId>testcontainers-keycloak</artifactId>
+        <version>${version.tc-keycloak}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-junit4-mock</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
+      <dependency>
         <groupId>com.github.docker-java</groupId>
         <artifactId>docker-java-api</artifactId>
         <version>${version.docker-java-api}</version>
@@ -1164,6 +1178,13 @@
         <groupId>io.projectreactor</groupId>
         <artifactId>reactor-core</artifactId>
         <version>3.5.11</version>
+      </dependency>
+
+      <!-- between com.github.dasniko:testcontainers-keycloak and its own dependencies -->
+      <dependency>
+        <groupId>jakarta.activation</groupId>
+        <artifactId>jakarta.activation-api</artifactId>
+        <version>${version.jakarta-activation}</version>
       </dependency>
 
       <!--      JMH Tests   -->
