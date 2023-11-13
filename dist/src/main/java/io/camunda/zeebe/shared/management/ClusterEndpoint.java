@@ -91,14 +91,10 @@ public class ClusterEndpoint {
       @PathVariable("resource") final Resource resource,
       @PathVariable final int id,
       @RequestParam(defaultValue = "false") final boolean dryRun) {
-    if (dryRun) {
-      return ResponseEntity.status(501).body("This operation does not support dry run");
-    }
-
     return switch (resource) {
       case brokers -> mapOperationResponse(
           requestSender
-              .addMembers(new AddMembersRequest(Set.of(new MemberId(String.valueOf(id)))))
+              .addMembers(new AddMembersRequest(Set.of(new MemberId(String.valueOf(id))), dryRun))
               .join());
       case partitions -> ResponseEntity.status(501).body("Adding partitions is not supported");
     };
@@ -109,13 +105,11 @@ public class ClusterEndpoint {
       @PathVariable("resource") final Resource resource,
       @PathVariable final int id,
       @RequestParam(defaultValue = "false") final boolean dryRun) {
-    if (dryRun) {
-      return ResponseEntity.status(501).body("This operation does not support dry run");
-    }
     return switch (resource) {
       case brokers -> mapOperationResponse(
           requestSender
-              .removeMembers(new RemoveMembersRequest(Set.of(new MemberId(String.valueOf(id)))))
+              .removeMembers(
+                  new RemoveMembersRequest(Set.of(new MemberId(String.valueOf(id))), dryRun))
               .join());
       case partitions -> ResponseEntity.status(501).body("Removing partitions is not supported");
     };
@@ -161,10 +155,6 @@ public class ClusterEndpoint {
       @PathVariable final int subResourceId,
       @RequestBody final PartitionAddRequest request,
       @RequestParam(defaultValue = "false") final boolean dryRun) {
-    if (dryRun) {
-      return ResponseEntity.status(501).body("This operation does not support dry run");
-    }
-
     final int priority = request.priority();
     return switch (resource) {
       case brokers -> switch (subResource) {
@@ -173,7 +163,7 @@ public class ClusterEndpoint {
             requestSender
                 .joinPartition(
                     new JoinPartitionRequest(
-                        MemberId.from(String.valueOf(resourceId)), subResourceId, priority))
+                        MemberId.from(String.valueOf(resourceId)), subResourceId, priority, dryRun))
                 .join());
         case brokers -> new ResponseEntity<>(HttpStatusCode.valueOf(404));
       };
@@ -183,7 +173,7 @@ public class ClusterEndpoint {
             requestSender
                 .joinPartition(
                     new JoinPartitionRequest(
-                        MemberId.from(String.valueOf(subResourceId)), resourceId, priority))
+                        MemberId.from(String.valueOf(subResourceId)), resourceId, priority, dryRun))
                 .join());
         case partitions -> new ResponseEntity<>(HttpStatusCode.valueOf(404));
       };
@@ -199,17 +189,13 @@ public class ClusterEndpoint {
       @PathVariable("subResource") final Resource subResource,
       @PathVariable final int subResourceId,
       @RequestParam(defaultValue = "false") final boolean dryRun) {
-    if (dryRun) {
-      return ResponseEntity.status(501).body("This operation does not support dry run");
-    }
-
     return switch (resource) {
       case brokers -> switch (subResource) {
         case partitions -> mapOperationResponse(
             requestSender
                 .leavePartition(
                     new LeavePartitionRequest(
-                        MemberId.from(String.valueOf(resourceId)), subResourceId))
+                        MemberId.from(String.valueOf(resourceId)), subResourceId, dryRun))
                 .join());
         case brokers -> new ResponseEntity<>(HttpStatusCode.valueOf(404));
       };
@@ -218,7 +204,7 @@ public class ClusterEndpoint {
             requestSender
                 .leavePartition(
                     new LeavePartitionRequest(
-                        MemberId.from(String.valueOf(subResourceId)), resourceId))
+                        MemberId.from(String.valueOf(subResourceId)), resourceId, dryRun))
                 .join());
         case partitions -> new ResponseEntity<>(HttpStatusCode.valueOf(404));
       };

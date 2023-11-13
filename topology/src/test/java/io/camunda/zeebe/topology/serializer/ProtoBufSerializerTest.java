@@ -73,7 +73,7 @@ final class ProtoBufSerializerTest {
   void shouldEncodeAndDecodeAddMembersRequest() {
     // given
     final var addMembersRequest =
-        new AddMembersRequest(Set.of(MemberId.from("1"), MemberId.from("2")));
+        new AddMembersRequest(Set.of(MemberId.from("1"), MemberId.from("2")), false);
 
     // when
     final var encodedRequest = protoBufSerializer.encodeAddMembersRequest(addMembersRequest);
@@ -87,7 +87,7 @@ final class ProtoBufSerializerTest {
   void shouldEncodeAndDecodeRemoveMembersRequest() {
     // given
     final var removeMembersRequest =
-        new RemoveMembersRequest(Set.of(MemberId.from("1"), MemberId.from("2")));
+        new RemoveMembersRequest(Set.of(MemberId.from("1"), MemberId.from("2")), false);
 
     // when
     final var encodedRequest = protoBufSerializer.encodeRemoveMembersRequest(removeMembersRequest);
@@ -101,7 +101,7 @@ final class ProtoBufSerializerTest {
   void shouldEncodeAndDecodeReassignAllPartitionsRequest() {
     // given
     final var reassignPartitionsRequest =
-        new ReassignPartitionsRequest(Set.of(MemberId.from("1"), MemberId.from("2")));
+        new ReassignPartitionsRequest(Set.of(MemberId.from("1"), MemberId.from("2")), false);
 
     // when
     final var encodedRequest =
@@ -115,7 +115,7 @@ final class ProtoBufSerializerTest {
   @Test
   void shouldEncodeAndDecodeJoinPartitionRequest() {
     // given
-    final var joinPartitionRequest = new JoinPartitionRequest(MemberId.from("2"), 3, 5);
+    final var joinPartitionRequest = new JoinPartitionRequest(MemberId.from("2"), 3, 5, false);
 
     // when
     final var encodedRequest = protoBufSerializer.encodeJoinPartitionRequest(joinPartitionRequest);
@@ -128,7 +128,7 @@ final class ProtoBufSerializerTest {
   @Test
   void shouldEncodeAndDecodeLeavePartitionRequest() {
     // given
-    final var leavePartitionRequest = new LeavePartitionRequest(MemberId.from("6"), 2);
+    final var leavePartitionRequest = new LeavePartitionRequest(MemberId.from("6"), 2, false);
 
     // when
     final var encodedRequest =
