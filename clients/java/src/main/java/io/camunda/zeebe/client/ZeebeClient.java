@@ -15,6 +15,7 @@
  */
 package io.camunda.zeebe.client;
 
+import io.camunda.zeebe.client.api.ExperimentalApi;
 import io.camunda.zeebe.client.api.command.BroadcastSignalCommandStep1;
 import io.camunda.zeebe.client.api.command.CancelProcessInstanceCommandStep1;
 import io.camunda.zeebe.client.api.command.CreateProcessInstanceCommandStep1;
@@ -22,6 +23,7 @@ import io.camunda.zeebe.client.api.command.DeleteResourceCommandStep1;
 import io.camunda.zeebe.client.api.command.DeployProcessCommandStep1;
 import io.camunda.zeebe.client.api.command.DeployResourceCommandStep1;
 import io.camunda.zeebe.client.api.command.EvaluateDecisionCommandStep1;
+import io.camunda.zeebe.client.api.command.MigrateProcessInstanceCommandStep1;
 import io.camunda.zeebe.client.api.command.ModifyProcessInstanceCommandStep1;
 import io.camunda.zeebe.client.api.command.PublishMessageCommandStep1;
 import io.camunda.zeebe.client.api.command.ResolveIncidentCommandStep1;
@@ -166,6 +168,37 @@ public interface ZeebeClient extends AutoCloseable, JobClient {
    * @return a builder for the command
    */
   ModifyProcessInstanceCommandStep1 newModifyProcessInstanceCommand(long processInstanceKey);
+
+  /**
+   * Command to migrate a process instance.
+   *
+   * <pre>
+   * zeebeClient
+   *  .newMigrateProcessInstanceCommand(1L)
+   *  .migrationPlan(2L)
+   *  .withMappingInstruction("element1", "element2")
+   *  .withMappingInstruction("element3", "element4")
+   *  .send();
+   * </pre>
+   *
+   * <pre>
+   * final MigrationPlan migrationPlan =
+   *         MigrationPlan.newBuilder()
+   *             .withTargetProcessDefinitionKey(2L)
+   *             .addMappingInstruction("element1", "element2")
+   *             .addMappingInstruction("element3", "element4")
+   *             .build();
+   * zeebeClient
+   *  .newMigrateProcessInstanceCommand(1L)
+   *  .migrationPlan(migrationPlan)
+   *  .send();
+   * </pre>
+   *
+   * @param processInstanceKey the key which identifies the source process instance
+   * @return a builder for the command
+   */
+  @ExperimentalApi("https://github.com/camunda/zeebe/issues/14907")
+  MigrateProcessInstanceCommandStep1 newMigrateProcessInstanceCommand(long processInstanceKey);
 
   /**
    * Command to cancel a process instance.
