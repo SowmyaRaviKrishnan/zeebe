@@ -175,6 +175,9 @@ public interface ZeebeClientBuilder {
    */
   ZeebeClientBuilder defaultJobWorkerStreamEnabled(boolean streamEnabled);
 
+  /** If enabled, the client will make use of the default retry policy defined. False by default. */
+  ZeebeClientBuilder useDefaultRetryPolicy(final boolean useDefaultRetryPolicy);
+
   /**
    * @return a new {@link ZeebeClient} with the provided configuration options.
    */
