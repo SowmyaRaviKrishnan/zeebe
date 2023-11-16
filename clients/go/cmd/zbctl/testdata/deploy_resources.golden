@@ -44,10 +44,10 @@
     },
     {
       "form": {
-        "formId": "form",
+        "formId": "simple_form",
         "version": 1,
         "formKey": "2251799813685251",
-        "resourceName": "form.form"
+        "resourceName": "deploy_form.form"
       }
     }
   ],
