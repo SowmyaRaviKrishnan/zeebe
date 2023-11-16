@@ -21,7 +21,7 @@ import io.camunda.zeebe.client.api.command.MigrationPlan.MigrationPlanBuilderSte
 import java.util.ArrayList;
 import java.util.List;
 
-public class MigrationPlanBuilderImpl
+public final class MigrationPlanBuilderImpl
     implements MigrationPlanBuilderStep1, MigrationPlanBuilderStep2, MigrationPlanBuilderFinalStep {
 
   private long targetProcessDefinitionKey;

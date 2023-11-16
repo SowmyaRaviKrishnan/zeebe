@@ -18,7 +18,7 @@ package io.camunda.zeebe.client.api.command;
 import io.camunda.zeebe.client.api.command.MigrationPlanBuilderImpl.MappingInstruction;
 import java.util.List;
 
-public class MigrationPlanImpl implements MigrationPlan {
+public final class MigrationPlanImpl implements MigrationPlan {
 
   final long targetProcessDefinitionKey;
   final List<MappingInstruction> mappingInstructions;

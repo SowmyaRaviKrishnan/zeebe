@@ -23,7 +23,7 @@ import io.camunda.zeebe.client.api.command.MigrationPlan;
 import io.camunda.zeebe.client.api.response.MigrateProcessInstanceResponse;
 import java.time.Duration;
 
-public class MigrateProcessInstanceCommandImpl
+public final class MigrateProcessInstanceCommandImpl
     implements MigrateProcessInstanceCommandStep1, MigrateProcessInstanceCommandFinalStep {
   private final long processInstanceKey;
   private Duration requestTimeout;
@@ -48,7 +48,7 @@ public class MigrateProcessInstanceCommandImpl
   }
 
   @Override
-  public MigrateProcessInstanceCommandFinalStep withMappingInstruction(
+  public MigrateProcessInstanceCommandFinalStep addMappingInstruction(
       final String sourceElementId, final String targetElementId) {
     // TODO - will be implemented with https://github.com/camunda/zeebe/issues/14921
     return this;

@@ -31,7 +31,18 @@ public interface MigrateProcessInstanceCommandStep1 {
   MigrateProcessInstanceCommandStep2 migrationPlan(final long targetProcessDefinitionKey);
 
   /**
-   * Create a MigrationPlan from the given {@link MigrationPlan} object.
+   * Use the provided MigrationPla from the given {@link MigrationPlan} object.
+   *
+   * <p>Example MigrationPlan object creation:
+   *
+   * <pre>
+   * final MigrationPlan migrationPlan =
+   *         MigrationPlan.newBuilder()
+   *             .withTargetProcessDefinitionKey(2L)
+   *             .addMappingInstruction("element1", "element2")
+   *             .addMappingInstruction("element3", "element4")
+   *             .build();
+   * </pre>
    *
    * @param migrationPlan the object that contains migration plan data
    * @return the builder for this command
@@ -40,14 +51,14 @@ public interface MigrateProcessInstanceCommandStep1 {
 
   interface MigrateProcessInstanceCommandStep2 {
     /**
-     * Add a MappingInstruction (TODO - link to actual gRPC object) for the element that will be
-     * migrated and its target element id in the target process definition.
+     * Add a MappingInstruction for the element that will be migrated and its target element id in
+     * the target process definition.
      *
      * @param sourceElementId the element id to migrate from
      * @param targetElementId the element id to migrate into
      * @return the builder for this command
      */
-    MigrateProcessInstanceCommandFinalStep withMappingInstruction(
+    MigrateProcessInstanceCommandFinalStep addMappingInstruction(
         final String sourceElementId, final String targetElementId);
   }
 
@@ -55,16 +66,16 @@ public interface MigrateProcessInstanceCommandStep1 {
       extends MigrateProcessInstanceCommandStep2, FinalCommandStep<MigrateProcessInstanceResponse> {
 
     /**
-     * Add a MappingInstruction (TODO - link to actual gRPC object) for the element that will be
-     * migrated and its target element id in the target process definition. This method allows to
-     * add more than one mapping instructions to the migration plan.
+     * Add a MappingInstruction for the element that will be migrated and its target element id in
+     * the target process definition. This method allows to add more than one mapping instructions
+     * to the migration plan.
      *
      * @param sourceElementId the element id to migrate from
      * @param targetElementId the element id to migrate into
      * @return the builder for this command
      */
     @Override
-    MigrateProcessInstanceCommandFinalStep withMappingInstruction(
+    MigrateProcessInstanceCommandFinalStep addMappingInstruction(
         final String sourceElementId, final String targetElementId);
   }
 }

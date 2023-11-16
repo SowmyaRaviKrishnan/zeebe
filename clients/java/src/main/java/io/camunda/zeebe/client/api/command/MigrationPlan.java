@@ -19,24 +19,74 @@ import io.camunda.zeebe.client.api.command.MigrationPlanBuilderImpl.MappingInstr
 import java.util.List;
 
 public interface MigrationPlan {
+
+  /** Create a new migration plan builder to build {@link MigrationPlan} object */
   static MigrationPlanBuilderStep1 newBuilder() {
     return new MigrationPlanBuilderImpl();
   }
 
+  /**
+   * Get the key of target process definition. targetProcessDefinitionKey indicates which process
+   * definition to use for the migration.
+   *
+   * @return the target process definition key
+   */
   public long getTargetProcessDefinitionKey();
 
+  /**
+   * Get mapping instructions to the migration for describing how to map elements from the source
+   * process definition to the target process definition.
+   *
+   * @return list of mapping instructions
+   */
   public List<MappingInstruction> getMappingInstructions();
 
   interface MigrationPlanBuilderStep1 {
+
+    /**
+     * Set the key of target process definition. targetProcessDefinitionKey indicates which process
+     * definition to use for the migration.
+     *
+     * @return the next step of the builder
+     */
     MigrationPlanBuilderStep2 withTargetProcessDefinitionKey(final long targetProcessDefinitionKey);
   }
 
   interface MigrationPlanBuilderStep2 {
+
+    /**
+     * Add a mapping instruction to the migration for describing how to map elements from the source
+     * process definition to the target process definition.
+     *
+     * <p>For example, let's consider a source process definition with a service task with id {@code
+     * "task1"} and the target process definition with a service task with id {@code "task2"}. The
+     * mapping instruction could be:
+     *
+     * <pre>{@code
+     * {
+     *   "sourceElementId": "task1",
+     *   "targetElementId": "task2"
+     * }
+     * }</pre>
+     *
+     * This mapping would migrate instances of the service task with id {@code "task1"} to the
+     * service task with id {@code "task2"}.
+     *
+     * @param sourceElementId element to migrate
+     * @param targetElementId element to migrate into
+     * @return the next step of the builder
+     */
     MigrationPlanBuilderFinalStep addMappingInstruction(
         final String sourceElementId, final String targetElementId);
   }
 
   interface MigrationPlanBuilderFinalStep extends MigrationPlanBuilderStep2 {
+
+    /**
+     * Build the {@link MigrationPlan} object after filling the object with migration data
+     *
+     * @return the built migration plan object
+     */
     MigrationPlan build();
   }
 }

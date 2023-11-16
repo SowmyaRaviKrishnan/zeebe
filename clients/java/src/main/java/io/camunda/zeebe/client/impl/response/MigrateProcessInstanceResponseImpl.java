@@ -17,7 +17,7 @@ package io.camunda.zeebe.client.impl.response;
 
 import io.camunda.zeebe.client.api.response.MigrateProcessInstanceResponse;
 
-public class MigrateProcessInstanceResponseImpl implements MigrateProcessInstanceResponse {
+public final class MigrateProcessInstanceResponseImpl implements MigrateProcessInstanceResponse {
 
   public MigrateProcessInstanceResponseImpl() {}
 }

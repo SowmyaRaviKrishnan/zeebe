@@ -170,14 +170,40 @@ public interface ZeebeClient extends AutoCloseable, JobClient {
   ModifyProcessInstanceCommandStep1 newModifyProcessInstanceCommand(long processInstanceKey);
 
   /**
-   * Command to migrate a process instance.
+   * Command to migrate a process instance to a different process definition.
+   *
+   * <p>The migration command contains a migration plan. Migration plan contains
+   * targetProcessDefinitionKey to indicate which process definition to use for the migration.
+   * Mapping instructions for the migration describe how to map elements from the source process
+   * definition to the target process definition.
+   *
+   * <p>For example, let's consider we want to migrate process instance with process id {@code 1},
+   * target process definition key {@code 2}, a source process definition with a service task with
+   * id {@code "task1"} and the target process definition with a service task with id {@code
+   * "task2"}. The migration command could be:
+   *
+   * <pre>{@code
+   * {
+   *  "processInstanceKey": 1,
+   *  "migrationPlan": {
+   *   "targetProcessDefinitionKey": 2,
+   *   "mappingInstructions": [
+   *    {
+   *     "sourceElementId": "task1",
+   *     "targetElementId": "task2"
+   *    }
+   *   ]
+   *  }
+   * }
+   * }</pre>
    *
    * <pre>
+   *
    * zeebeClient
    *  .newMigrateProcessInstanceCommand(1L)
    *  .migrationPlan(2L)
-   *  .withMappingInstruction("element1", "element2")
-   *  .withMappingInstruction("element3", "element4")
+   *  .addMappingInstruction("element1", "element2")
+   *  .addMappingInstruction("element3", "element4")
    *  .send();
    * </pre>
    *
@@ -194,7 +220,7 @@ public interface ZeebeClient extends AutoCloseable, JobClient {
    *  .send();
    * </pre>
    *
-   * @param processInstanceKey the key which identifies the source process instance
+   * @param processInstanceKey the key which refers to the process instance to migrate
    * @return a builder for the command
    */
   @ExperimentalApi("https://github.com/camunda/zeebe/issues/14907")

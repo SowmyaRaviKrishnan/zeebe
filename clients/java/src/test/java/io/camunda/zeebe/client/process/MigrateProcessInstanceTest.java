@@ -39,8 +39,8 @@ public class MigrateProcessInstanceTest extends ClientTest {
         client
             .newMigrateProcessInstanceCommand(PI_KEY)
             .migrationPlan(PD_KEY)
-            .withMappingInstruction(ELEMENT_ID_A, ELEMENT_ID_B)
-            .withMappingInstruction(ELEMENT_ID_C, ELEMENT_ID_D);
+            .addMappingInstruction(ELEMENT_ID_A, ELEMENT_ID_B)
+            .addMappingInstruction(ELEMENT_ID_C, ELEMENT_ID_D);
 
     // when
     final ThrowingCallable send = migrateProcessInstanceCommand::send;
