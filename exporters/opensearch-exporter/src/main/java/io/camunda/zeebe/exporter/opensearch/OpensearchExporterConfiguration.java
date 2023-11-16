@@ -87,6 +87,8 @@ public class OpensearchExporterConfiguration {
         return index.processInstanceBatch;
       case PROCESS_INSTANCE_CREATION:
         return index.processInstanceCreation;
+      case PROCESS_INSTANCE_MIGRATION:
+        return index.processInstanceMigration;
       case PROCESS_INSTANCE_MODIFICATION:
         return index.processInstanceModification;
       case PROCESS_MESSAGE_SUBSCRIPTION:
@@ -119,6 +121,8 @@ public class OpensearchExporterConfiguration {
         return index.commandDistribution;
       case FORM:
         return index.form;
+      case USER_TASK:
+        return index.userTask;
       default:
         return false;
     }
@@ -165,6 +169,7 @@ public class OpensearchExporterConfiguration {
     public boolean processInstance = true;
     public boolean processInstanceBatch = false;
     public boolean processInstanceCreation = true;
+    public boolean processInstanceMigration = true;
     public boolean processInstanceModification = true;
     public boolean processMessageSubscription = true;
     public boolean variable = true;
@@ -182,6 +187,8 @@ public class OpensearchExporterConfiguration {
     public boolean commandDistribution = true;
 
     public boolean form = true;
+
+    public boolean userTask = true;
 
     // index settings
     private Integer numberOfShards = null;
@@ -243,6 +250,8 @@ public class OpensearchExporterConfiguration {
           + processInstance
           + ", processInstanceCreation="
           + processInstanceCreation
+          + ", processInstanceMigration="
+          + processInstanceMigration
           + ", processInstanceModification="
           + processInstanceModification
           + ", processMessageSubscription="
@@ -275,6 +284,8 @@ public class OpensearchExporterConfiguration {
           + commandDistribution
           + ", form="
           + form
+          + ", userTask="
+          + userTask
           + '}';
     }
   }

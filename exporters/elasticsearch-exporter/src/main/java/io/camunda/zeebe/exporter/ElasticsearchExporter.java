@@ -288,6 +288,12 @@ public class ElasticsearchExporter implements Exporter {
       if (index.form) {
         createValueIndexTemplate(ValueType.FORM);
       }
+      if (index.userTask) {
+        createValueIndexTemplate(ValueType.USER_TASK);
+      }
+      if (index.processInstanceMigration) {
+        createValueIndexTemplate(ValueType.PROCESS_INSTANCE_MIGRATION);
+      }
     }
 
     indexTemplatesCreated = true;

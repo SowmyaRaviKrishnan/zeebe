@@ -631,6 +631,7 @@
         #     deploymentDistribution: true
         #     error: true
         #     escalation: true
+        #     form: true
         #     incident: true
         #     job: true
         #     jobBatch: false
@@ -643,12 +644,14 @@
         #     processInstance: true
         #     processInstanceBatch: false
         #     processInstanceCreation: true
+        #     processInstanceMigration: true
         #     processInstanceModification: true
         #     processMessageSubscription: true
         #     resourceDeletion: true
         #     signal: true
         #     signalSubscription: true
         #     timer: true
+        #     userTask: true
         #     variable: true
         #     variableDocument: true
         #
@@ -708,6 +711,7 @@
         #     deploymentDistribution: true
         #     error: true
         #     escalation: true
+        #     form: true
         #     incident: true
         #     job: true
         #     jobBatch: false
@@ -720,12 +724,14 @@
         #     processInstance: true
         #     processInstanceBatch: false
         #     processInstanceCreation: true
+        #     processInstanceMigration: true
         #     processInstanceModification: true
         #     processMessageSubscription: true
         #     resourceDeletion: true
         #     signal: true
         #     signalSubscription: true
         #     timer: true
+        #     userTask: true
         #     variable: true
         #     variableDocument: true
 

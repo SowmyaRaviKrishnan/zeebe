@@ -61,6 +61,7 @@ final class TestSupport {
       case VARIABLE -> config.variable = value;
       case VARIABLE_DOCUMENT -> config.variableDocument = value;
       case PROCESS_INSTANCE_CREATION -> config.processInstanceCreation = value;
+      case PROCESS_INSTANCE_MIGRATION -> config.processInstanceMigration = value;
       case PROCESS_INSTANCE_MODIFICATION -> config.processInstanceModification = value;
       case ERROR -> config.error = value;
       case PROCESS -> config.process = value;
@@ -78,6 +79,7 @@ final class TestSupport {
       case RESOURCE_DELETION -> config.resourceDeletion = value;
       case COMMAND_DISTRIBUTION -> config.commandDistribution = value;
       case FORM -> config.form = value;
+      case USER_TASK -> config.userTask = value;
       default -> throw new IllegalArgumentException(
           "No known indexing configuration option for value type " + valueType);
     }

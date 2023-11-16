@@ -26,11 +26,16 @@ message LeavePartitionRequest {
 
 message ScaleRequest {
   repeated string memberIds = 1;
+  bool dryRun = 2;
 }
 
 message ReassignAllPartitionsRequest {
   // The ids of the brokers to which all partitions should be re-distributed
   repeated string memberIds = 1;
+}
+
+message CancelTopologyChangeRequest {
+  int64 changeId = 1;
 }
 
 message TopologyChangeResponse {
@@ -42,8 +47,9 @@ message TopologyChangeResponse {
 
 message Response {
   oneof response {
+    ErrorResponse error = 1;
     TopologyChangeResponse topologyChangeResponse = 2;
-    ErrorResponse error = 3;
+    topology_protocol.ClusterTopology clusterTopology = 3;
   }
 }
 

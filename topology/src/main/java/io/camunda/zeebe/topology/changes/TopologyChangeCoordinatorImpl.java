@@ -41,6 +41,48 @@ public class TopologyChangeCoordinatorImpl implements TopologyChangeCoordinator 
 
   @Override
   public ActorFuture<TopologyChangeResult> applyOperations(final TopologyChangeRequest request) {
+    return applyOrDryRun(false, request);
+  }
+
+  @Override
+  public ActorFuture<TopologyChangeResult> simulateOperations(final TopologyChangeRequest request) {
+    return applyOrDryRun(true, request);
+  }
+
+  @Override
+  public ActorFuture<ClusterTopology> cancelChange(final long changeId) {
+    final ActorFuture<ClusterTopology> future = executor.createFuture();
+    executor.run(
+        () ->
+            clusterTopologyManager.updateClusterTopology(
+                clusterTopology -> {
+                  if (!validateCancel(changeId, clusterTopology, future)) {
+                    return clusterTopology;
+                  }
+                  final var completedOperation =
+                      clusterTopology
+                          .pendingChanges()
+                          .map(ClusterChangePlan::completedOperations)
+                          .orElse(List.of());
+                  final var cancelledOperations =
+                      clusterTopology
+                          .pendingChanges()
+                          .map(ClusterChangePlan::pendingOperations)
+                          .orElse(List.of());
+                  LOG.warn(
+                      "Cancelling topology change '{}'. Following operations have been already applied: {}. Following pending operations won't be applied: {}",
+                      changeId,
+                      completedOperation,
+                      cancelledOperations);
+                  final var cancelledTopology = clusterTopology.cancelPendingChanges();
+                  future.complete(cancelledTopology);
+                  return cancelledTopology;
+                }));
+    return future;
+  }
+
+  private ActorFuture<TopologyChangeResult> applyOrDryRun(
+      final boolean dryRun, final TopologyChangeRequest request) {
     final ActorFuture<TopologyChangeResult> future = executor.createFuture();
     executor.run(
         () ->
@@ -52,20 +94,21 @@ public class TopologyChangeCoordinatorImpl implements TopologyChangeCoordinator 
                         failFuture(future, errorOnGettingTopology);
                         return;
                       }
-                      final var operationsEither = request.operations(currentClusterTopology);
-                      if (operationsEither.isLeft()) {
-                        failFuture(future, operationsEither.getLeft());
+                      final var generatedOperations = request.operations(currentClusterTopology);
+                      if (generatedOperations.isLeft()) {
+                        failFuture(future, generatedOperations.getLeft());
                         return;
                       }
 
-                      applyOperationsOnTopology(
-                          currentClusterTopology, operationsEither.get(), future);
+                      applyOrDryRunOnTopology(
+                          dryRun, currentClusterTopology, generatedOperations.get(), future);
                     },
                     executor));
     return future;
   }
 
-  private void applyOperationsOnTopology(
+  private void applyOrDryRunOnTopology(
+      final boolean dryRun,
       final ClusterTopology currentClusterTopology,
       final List<TopologyChangeOperation> operations,
       final ActorFuture<TopologyChangeResult> future) {
@@ -90,10 +133,14 @@ public class TopologyChangeCoordinatorImpl implements TopologyChangeCoordinator 
             return;
           }
 
-          // if the validation was successful, apply the changes
+          // Validation was successful. If it's not a dry-run, apply the changes.
           final ActorFuture<ClusterTopology> applyFuture = executor.createFuture();
-          applyTopologyChange(
-              operations, currentClusterTopology, simulatedFinalTopology, applyFuture);
+          if (dryRun) {
+            applyFuture.complete(currentClusterTopology.startTopologyChange(operations));
+          } else {
+            applyTopologyChange(
+                operations, currentClusterTopology, simulatedFinalTopology, applyFuture);
+          }
 
           applyFuture.onComplete(
               (clusterTopologyWithPendingChanges, error) -> {
@@ -219,5 +266,35 @@ public class TopologyChangeCoordinatorImpl implements TopologyChangeCoordinator 
       future.completeExceptionally(
           new TopologyRequestFailedException.InternalError(error.getMessage()));
     }
+  }
+
+  private boolean validateCancel(
+      final long changeId,
+      final ClusterTopology currentClusterTopology,
+      final ActorFuture<ClusterTopology> future) {
+    if (currentClusterTopology.isUninitialized()) {
+      failFuture(
+          future,
+          new InvalidRequest(
+              "Cannot cancel change " + changeId + " because the topology is not initialized"));
+      return false;
+    }
+    if (!currentClusterTopology.hasPendingChanges()) {
+      failFuture(
+          future,
+          new InvalidRequest(
+              "Cannot cancel change " + changeId + " because no change is in progress"));
+      return false;
+    }
+
+    final var clusterChangePlan = currentClusterTopology.pendingChanges().orElseThrow();
+    if (clusterChangePlan.id() != changeId) {
+      failFuture(
+          future,
+          new InvalidRequest(
+              "Cannot cancel change " + changeId + " because it is not the current change"));
+      return false;
+    }
+    return true;
   }
 }

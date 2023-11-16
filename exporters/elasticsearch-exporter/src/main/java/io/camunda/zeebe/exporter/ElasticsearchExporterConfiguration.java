@@ -88,6 +88,8 @@ public class ElasticsearchExporterConfiguration {
         return index.processInstanceBatch;
       case PROCESS_INSTANCE_CREATION:
         return index.processInstanceCreation;
+      case PROCESS_INSTANCE_MIGRATION:
+        return index.processInstanceMigration;
       case PROCESS_INSTANCE_MODIFICATION:
         return index.processInstanceModification;
       case PROCESS_MESSAGE_SUBSCRIPTION:
@@ -120,6 +122,8 @@ public class ElasticsearchExporterConfiguration {
         return index.commandDistribution;
       case FORM:
         return index.form;
+      case USER_TASK:
+        return index.userTask;
       default:
         return false;
     }
@@ -166,6 +170,7 @@ public class ElasticsearchExporterConfiguration {
     public boolean processInstance = true;
     public boolean processInstanceBatch = false;
     public boolean processInstanceCreation = true;
+    public boolean processInstanceMigration = true;
     public boolean processInstanceModification = true;
     public boolean processMessageSubscription = true;
     public boolean variable = true;
@@ -182,6 +187,7 @@ public class ElasticsearchExporterConfiguration {
     public boolean resourceDeletion = true;
     public boolean commandDistribution = true;
     public boolean form = true;
+    public boolean userTask = true;
 
     // index settings
     private Integer numberOfShards = null;
@@ -247,6 +253,8 @@ public class ElasticsearchExporterConfiguration {
           + processInstanceBatch
           + ", processInstanceCreation="
           + processInstanceCreation
+          + ", processInstanceMigration="
+          + processInstanceMigration
           + ", processInstanceModification="
           + processInstanceModification
           + ", processMessageSubscription="
@@ -277,6 +285,8 @@ public class ElasticsearchExporterConfiguration {
           + commandDistribution
           + ", form="
           + form
+          + ", userTask="
+          + userTask
           + '}';
     }
   }

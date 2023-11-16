@@ -40,6 +40,8 @@ import io.camunda.zeebe.protocol.impl.record.value.message.ProcessMessageSubscri
 import io.camunda.zeebe.protocol.impl.record.value.processinstance.ProcessInstanceBatchRecord;
 import io.camunda.zeebe.protocol.impl.record.value.processinstance.ProcessInstanceCreationRecord;
 import io.camunda.zeebe.protocol.impl.record.value.processinstance.ProcessInstanceCreationStartInstruction;
+import io.camunda.zeebe.protocol.impl.record.value.processinstance.ProcessInstanceMigrationMappingInstruction;
+import io.camunda.zeebe.protocol.impl.record.value.processinstance.ProcessInstanceMigrationRecord;
 import io.camunda.zeebe.protocol.impl.record.value.processinstance.ProcessInstanceModificationActivateInstruction;
 import io.camunda.zeebe.protocol.impl.record.value.processinstance.ProcessInstanceModificationRecord;
 import io.camunda.zeebe.protocol.impl.record.value.processinstance.ProcessInstanceModificationTerminateInstruction;
@@ -49,6 +51,7 @@ import io.camunda.zeebe.protocol.impl.record.value.resource.ResourceDeletionReco
 import io.camunda.zeebe.protocol.impl.record.value.signal.SignalRecord;
 import io.camunda.zeebe.protocol.impl.record.value.signal.SignalSubscriptionRecord;
 import io.camunda.zeebe.protocol.impl.record.value.timer.TimerRecord;
+import io.camunda.zeebe.protocol.impl.record.value.usertask.UserTaskRecord;
 import io.camunda.zeebe.protocol.impl.record.value.variable.VariableDocumentRecord;
 import io.camunda.zeebe.protocol.impl.record.value.variable.VariableRecord;
 import io.camunda.zeebe.protocol.record.JsonSerializable;
@@ -2058,6 +2061,167 @@ final class JsonSerializableToJsonTest {
           "batchElementInstanceKey": 456,
           "index": -1,
           "tenantId": "<default>"
+        }
+        """
+      },
+
+      /////////////////////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////// UserTaskRecord ///////////////////////////////////////////
+      /////////////////////////////////////////////////////////////////////////////////////////////
+      {
+        "UserTaskRecord",
+        (Supplier<UnifiedRecordValue>)
+            () ->
+                new UserTaskRecord()
+                    .setUserTaskKey(123)
+                    .setAssignee("myAssignee")
+                    .setCandidateGroups("myCandidateGroups")
+                    .setCandidateUsers("myCandidateUsers")
+                    .setDueDate("2023-11-11T11:11:00+01:00")
+                    .setFollowUpDate("2023-11-12T11:11:00+01:00")
+                    .setFormKey(456)
+                    .setVariables(VARIABLES_MSGPACK)
+                    .setBpmnProcessId("test-process")
+                    .setProcessDefinitionKey(13)
+                    .setProcessDefinitionVersion(12)
+                    .setProcessInstanceKey(1234)
+                    .setElementId("activity")
+                    .setElementInstanceKey(5678),
+        """
+      {
+        "bpmnProcessId": "test-process",
+        "processDefinitionKey": 13,
+        "processDefinitionVersion": 12,
+        "processInstanceKey": 1234,
+        "elementId": "activity",
+        "elementInstanceKey": 5678,
+        "assignee": "myAssignee",
+        "candidateGroups": "myCandidateGroups",
+        "candidateUsers": "myCandidateUsers",
+        "dueDate": "2023-11-11T11:11:00+01:00",
+        "followUpDate": "2023-11-12T11:11:00+01:00",
+        "variables": {
+          "foo": "bar"
+        },
+        "formKey": 456,
+        "userTaskKey": 123,
+        "tenantId": "<default>"
+      }
+      """
+      },
+
+      /////////////////////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////// Empty UserTaskRecord//////////////////////////////////////
+      /////////////////////////////////////////////////////////////////////////////////////////////
+      {
+        "Empty UserTaskRecord",
+        (Supplier<UnifiedRecordValue>) UserTaskRecord::new,
+        """
+      {
+        "bpmnProcessId": "",
+        "processDefinitionKey": -1,
+        "processDefinitionVersion": -1,
+        "processInstanceKey": -1,
+        "elementId": "",
+        "elementInstanceKey": -1,
+        "assignee": "",
+        "candidateGroups": "",
+        "candidateUsers": "",
+        "dueDate": "",
+        "followUpDate": "",
+        "variables": {},
+        "formKey": -1,
+        "userTaskKey": -1,
+        "tenantId": "<default>"
+      }
+      """
+      },
+      /////////////////////////////////////////////////////////////////////////////////////////////
+      ///////////////////////////// UserTaskRecord with nullable variable /////////////////////////
+      /////////////////////////////////////////////////////////////////////////////////////////////
+      {
+        "UserTaskRecord WithNullableVariable",
+        (Supplier<UnifiedRecordValue>)
+            () ->
+                new UserTaskRecord()
+                    .setVariables(
+                        new UnsafeBuffer(MsgPackConverter.convertToMsgPack("{'foo':null}"))),
+        """
+      {
+        "bpmnProcessId": "",
+        "processDefinitionKey": -1,
+        "processDefinitionVersion": -1,
+        "processInstanceKey": -1,
+        "elementId": "",
+        "elementInstanceKey": -1,
+        "assignee": "",
+        "candidateGroups": "",
+        "candidateUsers": "",
+        "dueDate": "",
+        "followUpDate": "",
+        "variables": {
+          "foo": null
+        },
+        "formKey": -1,
+        "userTaskKey": -1,
+        "tenantId": "<default>"
+      }
+      """
+      },
+
+      /////////////////////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////// ProcessInstanceMigrationRecord ///////////////////////////////
+      /////////////////////////////////////////////////////////////////////////////////////////////
+      {
+        "ProcessInstanceMigrationRecord",
+        (Supplier<UnifiedRecordValue>)
+            () ->
+                new ProcessInstanceMigrationRecord()
+                    .setProcessInstanceKey(123L)
+                    .setTargetProcessDefinitionKey(456L)
+                    .addMappingInstruction(
+                        new ProcessInstanceMigrationMappingInstruction()
+                            .setSourceElementId("sourceId")
+                            .setTargetElementId("targetId"))
+                    .addMappingInstruction(
+                        new ProcessInstanceMigrationMappingInstruction()
+                            .setSourceElementId("sourceId2"))
+                    .addMappingInstruction(
+                        new ProcessInstanceMigrationMappingInstruction()
+                            .setTargetElementId("targetId3")),
+        """
+        {
+          "processInstanceKey": 123,
+          "targetProcessDefinitionKey": 456,
+          "mappingInstructions": [{
+            "sourceElementId": "sourceId",
+            "targetElementId": "targetId"
+          }, {
+            "sourceElementId": "sourceId2",
+            "targetElementId": ""
+          }, {
+            "sourceElementId": "",
+            "targetElementId": "targetId3"
+          }]
+        }
+        """
+      },
+
+      /////////////////////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////// Empty ProcessInstanceMigrationRecord /////////////////////////
+      /////////////////////////////////////////////////////////////////////////////////////////////
+      {
+        "Empty ProcessInstanceMigrationRecord",
+        (Supplier<UnifiedRecordValue>)
+            () ->
+                new ProcessInstanceMigrationRecord()
+                    .setProcessInstanceKey(123L)
+                    .setTargetProcessDefinitionKey(456L),
+        """
+        {
+          "processInstanceKey": 123,
+          "targetProcessDefinitionKey": 456,
+          "mappingInstructions": []
         }
         """
       },

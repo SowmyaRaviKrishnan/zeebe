@@ -113,6 +113,16 @@ public interface ClusterActuator {
   PostOperationResponse scaleBrokers(@RequestBody List<Integer> ids);
 
   /**
+   * Scales the given brokers up or down and reassigns partitions to the new brokers.
+   *
+   * @param dryRun if true, changes are not applied but only simulated.
+   * @throws feign.FeignException if the request is not successful (e.g. 4xx or 5xx)
+   */
+  @RequestLine("POST /brokers?dryRun={dryRun}")
+  @Headers({"Content-Type: application/json", "Accept: application/json"})
+  PostOperationResponse scaleBrokers(@RequestBody List<Integer> ids, @Param boolean dryRun);
+
+  /**
    * Request that the broker is added to the cluster.
    *
    * @throws feign.FeignException if the request is not successful (e.g. 4xx or 5xx)
@@ -129,4 +139,8 @@ public interface ClusterActuator {
   @RequestLine("DELETE /brokers/{brokerId}")
   @Headers({"Content-Type: application/json", "Accept: application/json"})
   PostOperationResponse removeBroker(@Param final int brokerId);
+
+  @RequestLine("DELETE /changes/{changeId}")
+  @Headers({"Content-Type: application/json", "Accept: application/json"})
+  GetTopologyResponse cancelChange(@Param final long changeId);
 }
